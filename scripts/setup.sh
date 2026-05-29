@@ -73,17 +73,20 @@ WRANGLER="$REPO_DIR/node_modules/.bin/wrangler"
 [ -x "$WRANGLER" ] || fail "wrangler not found — run 'npm install' in $REPO_DIR first"
 
 cd "$REPO_DIR"
-CLOUDFLARE_API_TOKEN="$CF_TOKEN" "$WRANGLER" deploy --quiet 2>&1 | grep -v "WARNING\|update available\|wrangler\|-----" || true
+CLOUDFLARE_API_TOKEN="$CF_TOKEN" "$WRANGLER" deploy 2>&1 \
+  | grep -v "WARNING\|update available\|wrangler\|-----\|▲\|⛅\|No bindings" || true
 ok "Worker deployed to https://$WORKER_NAME.creative-ai-builder.workers.dev"
 
 # ── 3. Set secrets ────────────────────────────────────────────────────────────
 step "Step 3/4 — Setting secrets"
 info "Setting CLASS_PASSWORD..."
-echo "$CLASS_PASSWORD" | CLOUDFLARE_API_TOKEN="$CF_TOKEN" "$WRANGLER" secret put CLASS_PASSWORD --quiet 2>/dev/null
+echo "$CLASS_PASSWORD" | CLOUDFLARE_API_TOKEN="$CF_TOKEN" "$WRANGLER" secret put CLASS_PASSWORD 2>&1 \
+  | grep -v "WARNING\|update available\|wrangler\|-----\|▲\|⛅" || true
 ok "CLASS_PASSWORD set to: $CLASS_PASSWORD"
 
 info "Setting ANTHROPIC_API_KEY..."
-echo "$ANTHROPIC_KEY" | CLOUDFLARE_API_TOKEN="$CF_TOKEN" "$WRANGLER" secret put ANTHROPIC_API_KEY --quiet 2>/dev/null
+echo "$ANTHROPIC_KEY" | CLOUDFLARE_API_TOKEN="$CF_TOKEN" "$WRANGLER" secret put ANTHROPIC_API_KEY 2>&1 \
+  | grep -v "WARNING\|update available\|wrangler\|-----\|▲\|⛅" || true
 ok "ANTHROPIC_API_KEY set (value hidden)"
 
 # ── 4. Quick smoke test ───────────────────────────────────────────────────────
