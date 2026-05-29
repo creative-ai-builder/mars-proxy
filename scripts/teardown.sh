@@ -15,7 +15,24 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-CF_TOKEN="${1:?Usage: $0 <CF_TOKEN>}"
+# ── Load ~/.mars-secrets if no arguments supplied ─────────────────────────────
+if [ $# -eq 0 ]; then
+  [ -f ~/.mars-secrets ] || {
+    echo "❌ No arguments given and ~/.mars-secrets not found."
+    echo ""
+    echo "Create it with:"
+    echo "  cat > ~/.mars-secrets << 'EOF'"
+    echo "  CF_TOKEN=cfut_your_cloudflare_token_here"
+    echo "  ANTHROPIC_KEY=sk-ant-your_anthropic_key_here"
+    echo "  CLASS_PASSWORD=class2025"
+    echo "  EOF"
+    echo "  chmod 600 ~/.mars-secrets"
+    exit 1
+  }
+  set -a && source ~/.mars-secrets && set +a
+fi
+
+CF_TOKEN="${1:-${CF_TOKEN:?CF_TOKEN not set — see ~/.mars-secrets}}"
 WORKER_NAME="mars-proxy"
 
 # ── Colours ──────────────────────────────────────────────────────────────────
