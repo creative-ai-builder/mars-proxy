@@ -59,6 +59,7 @@ export default {
     // ── Build forwarded request ───────────────────────────────────────────
     const forwardHeaders = new Headers(request.headers);
     forwardHeaders.set('x-api-key', anthropicKey);
+    forwardHeaders.set('anthropic-dangerous-direct-browser-access', 'true'); // Required for CORS requests from browsers
     forwardHeaders.delete('Authorization'); // Anthropic uses x-api-key, not Bearer
     // Strip Cloudflare-added headers that Anthropic doesn't need
     for (const h of ['cf-ray', 'cf-connecting-ip', 'cf-visitor', 'cf-ipcountry']) {
